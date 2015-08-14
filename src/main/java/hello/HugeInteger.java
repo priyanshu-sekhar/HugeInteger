@@ -17,7 +17,7 @@ public class HugeInteger implements HugeIntegerInterface{
 		
 	}
 	public HugeInteger(String hugeInteger){
-		parseString(hugeInteger);
+		this.hugeInteger = parse(hugeInteger);
 	}
 	
 	@RequestMapping(value = "add")
@@ -25,11 +25,19 @@ public class HugeInteger implements HugeIntegerInterface{
 			@RequestParam(value = "addTo") String hi){
 		int[] hiArr = parse(hi);
 		this.hugeInteger = parse(integer);
+		int[] result = new int[(hugeInteger.length > hiArr.length ? hugeInteger.length: hiArr.length) + 1];
 		ArrayUtils.reverse(hiArr); 
 		ArrayUtils.reverse(this.hugeInteger);
-		for (int i = 0; i < (hugeInteger.length > hiArr.length ? hiArr.length: hugeInteger.length); i++)
-			hugeInteger[i] += hiArr[i];
-		ArrayUtils.reverse(hugeInteger);
+		for (int i = 0; i < result.length - 1; i++){
+			result[i] += hugeInteger[i] + hiArr[i];
+			if (result[i] > 9) {
+				result[i + 1] = result[i] / 10;
+			    result[i] = result[i] % 10;
+			}
+		}
+		
+		ArrayUtils.reverse(result);
+		hugeInteger = result;
 		return toString();
 	}
 
@@ -40,8 +48,20 @@ public class HugeInteger implements HugeIntegerInterface{
 		this.hugeInteger = parse(integer);
 		ArrayUtils.reverse(hiArr); 
 		ArrayUtils.reverse(this.hugeInteger);
-		for (int i = 0; i < (hugeInteger.length > hiArr.length ? hiArr.length: hugeInteger.length); i++)
+		if (this.isLessThan(new HugeInteger(hi))){
+			int[] temp = hugeInteger;
+			hugeInteger = hiArr;
+			hiArr = temp;
+		}
+			
+	    for (int i = 0; i < hugeInteger.length ; i++){
 			hugeInteger[i] -= hiArr[i];
+			if (hugeInteger[i] < 0) {
+				hugeInteger[i] = 10 + hugeInteger[i];
+				if (i != hugeInteger.length - 1)
+				hugeInteger[i + 1] -= 1;
+			}
+		}
 		ArrayUtils.reverse(hugeInteger);
 		return toString();
 	}
@@ -63,29 +83,30 @@ public class HugeInteger implements HugeIntegerInterface{
 	    hgInt = removeLeadingZeros(hgInt);
 	    HugeInteger comparedInteger = new HugeInteger(hgInt);
 	    Predicate<Integer> isZero = t -> {return isZero();};
-	    Predicate<String> isEqualTo = t -> {return isEqualTo(t);};
-	    Predicate<String> isNotEqualTo = t -> {return isNotEqualTo(t);};
-	    Predicate<String> isGreaterThan = t -> {return isGreaterThan(t);};
-	    Predicate<String> isLessThan = t -> {return isLessThan(t);};
-	    Predicate<String> isGreaterThanOrEqualTo = t -> {return isGreaterThanOrEqualTo(t);};
-	    Predicate<String> isLessThanOrEqualTo = t -> {return isLessThanOrEqualTo(t);};
+	   
+	    Predicate<HugeInteger> isEqualTo = t -> {return isEqualTo(t);};
+	    Predicate<HugeInteger> isNotEqualTo = t -> {return isNotEqualTo(t);};
+	    Predicate<HugeInteger> isGreaterThan = t -> {return isGreaterThan(t);};
+	    Predicate<HugeInteger> isLessThan = t -> {return isLessThan(t);};
+	    Predicate<HugeInteger> isGreaterThanOrEqualTo = t -> {return isGreaterThanOrEqualTo(t);};
+	    Predicate<HugeInteger> isLessThanOrEqualTo = t -> {return isLessThanOrEqualTo(t);};
 	    
 	    
 	    switch(operation){
 	    case "isZero":
 	    	return isZero.test(7);
 	    case "isEqualTo":
-	    	return isEqualTo.test(hgInt);
+	    	return isEqualTo.test(comparedInteger);
 	    case "isNotEqualTo":
-	    	return isNotEqualTo.test(hgInt);
+	    	return isNotEqualTo.test(comparedInteger);
 	    case "isGreaterThan":
-	    	return isGreaterThan.test(hgInt);
+	    	return isGreaterThan.test(comparedInteger);
 	    case "isLessThan":
-	    	return isLessThan.test(hgInt);
+	    	return isLessThan.test(comparedInteger);
 	    case "isGreaterThanOrEqualTo":
-	    	return isGreaterThanOrEqualTo.test(hgInt);
+	    	return isGreaterThanOrEqualTo.test(comparedInteger);
 	    case "isLessThanOrEqualTo":
-	    	return isLessThanOrEqualTo.test(hgInt);
+	    	return isLessThanOrEqualTo.test(comparedInteger);
 	    }
 		return true;
 	}
@@ -98,53 +119,10 @@ public class HugeInteger implements HugeIntegerInterface{
         return sb.toString();
 	}
 	
-	private boolean isEqualTo(String hi){
-		if (hi.length() != hugeInteger.length)
-			return false;
-		for (int i = 0; i < hugeInteger.length; i++)
-			if (hugeInteger[i] != hi.charAt(i) - 48)
-				return false;
-		return true;	
-	}
-	
-	private boolean isNotEqualTo(String hi){
-		if (hi.length() != hugeInteger.length)
-			return false;
-		for (int i = 0; i < hugeInteger.length; i++)
-			if (hugeInteger[i] != hi.charAt(i) - 48)
-				return false;
-		return true;	
-	}
-	
 	private String removeLeadingZeros(String hi){
 		while (hi.charAt(0) - ZERO == 0 && hi.length() > 1)
 			hi = hi.substring(1);
 		return hi;
-	}
-	private boolean isGreaterThan(String hi){
-		if (hugeInteger.length < hi.length())
-			return false;
-		for (int i = 0; i < hugeInteger.length; i++)
-			if (hugeInteger[i] < hi.charAt(i) - 48)
-				return false;
-		return true;	
-	}
-	
-	private boolean isLessThan(String hi){
-		if (hugeInteger.length > hi.length())
-			return false;
-		for (int i = 0; i < hugeInteger.length; i++)
-			if (hugeInteger[i] > hi.charAt(i) - 48)
-				return false;
-		return true;	
-	}
-	
-	private boolean isGreaterThanOrEqualTo(String hi){
-		return isGreaterThan(hi) || isEqualTo(hi);
-	}
-	
-	private boolean isLessThanOrEqualTo(String hi){
-		return isLessThan(hi) || isEqualTo(hi);
 	}
 	
 	private int[] parse(String hgInt){
@@ -159,38 +137,45 @@ public class HugeInteger implements HugeIntegerInterface{
 
 	@Override
 	public Boolean isEqualTo(HugeInteger that) {
-		// TODO Auto-generated method stub
-		return null;
+		String hi = that.toString();
+		if (hi.length() != hugeInteger.length)
+			return false;
+		for (int i = 0; i < hugeInteger.length; i++)
+			if (hugeInteger[i] != hi.charAt(i) - 48)
+				return false;
+		return true;
 	}
 
 	@Override
 	public Boolean isNotEqualTo(HugeInteger that) {
-		// TODO Auto-generated method stub
-		return null;
+		return !isEqualTo(that);
 	}
 
 	@Override
 	public Boolean isGreaterThan(HugeInteger that) {
-		// TODO Auto-generated method stub
-		return null;
+		String hi = that.toString();
+		if (hugeInteger.length != hi.length())
+			return hugeInteger.length > hi.length();
+		
+		for (int i = 0; i < hugeInteger.length; i++)
+			if (hugeInteger[i] < hi.charAt(i) - ZERO)
+				return false;
+		return isNotEqualTo(that);	
 	}
 
 	@Override
 	public Boolean isLessThan(HugeInteger that) {
-		// TODO Auto-generated method stub
-		return null;
+		return !isGreaterThan(that);
 	}
 
 	@Override
 	public Boolean isGreaterThanOrEqualTo(HugeInteger that) {
-		// TODO Auto-generated method stub
-		return null;
+		return isGreaterThan(that) || isEqualTo(that);
 	}
 
 	@Override
 	public Boolean isLessThanOrEqualTo(HugeInteger that) {
-		// TODO Auto-generated method stub
-		return null;
+		return isLessThan(that) || isEqualTo(that);
 	}
 	
 }
