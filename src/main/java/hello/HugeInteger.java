@@ -28,7 +28,7 @@ public class HugeInteger implements HugeIntegerInterface{
 		int[] result = new int[(hugeInteger.length > hiArr.length ? hugeInteger.length: hiArr.length) + 1];
 		ArrayUtils.reverse(hiArr); 
 		ArrayUtils.reverse(this.hugeInteger);
-<<<<<<< HEAD
+
 		for (int i = 0; i < result.length - 1; i++){
 			result[i] += hugeInteger[i] + hiArr[i];
 			if (result[i] > 9) {
@@ -39,17 +39,7 @@ public class HugeInteger implements HugeIntegerInterface{
 		
 		ArrayUtils.reverse(result);
 		hugeInteger = result;
-=======
-		for (int i = 0; i < (hugeInteger.length > hiArr.length ? hiArr.length: hugeInteger.length); i++){
-			hugeInteger[i] += hiArr[i];
-			if (hugeInteger[i] > 9) {
-				hugeInteger[i + 1] =  hugeInteger[i] / 10;
-			    hugeInteger[i] = hugeInteger[i] % 10;
-			}
-		}
 
-		ArrayUtils.reverse(hugeInteger);
->>>>>>> 73df66ffd909ad27efd3f5d39853e13231504359
 		return toString();
 	}
 
@@ -60,35 +50,25 @@ public class HugeInteger implements HugeIntegerInterface{
 		this.hugeInteger = parse(integer);
 		ArrayUtils.reverse(hiArr); 
 		ArrayUtils.reverse(this.hugeInteger);
-<<<<<<< HEAD
+
 		if (this.isLessThan(new HugeInteger(hi))){
-=======
-		if (hugeInteger.length < hiArr.length){
->>>>>>> 73df66ffd909ad27efd3f5d39853e13231504359
+
 			int[] temp = hugeInteger;
 			hugeInteger = hiArr;
 			hiArr = temp;
 		}
 			
-<<<<<<< HEAD
 	    for (int i = 0; i < hugeInteger.length ; i++){
 			hugeInteger[i] -= hiArr[i];
 			if (hugeInteger[i] < 0) {
 				hugeInteger[i] = 10 + hugeInteger[i];
 				if (i != hugeInteger.length - 1)
 				hugeInteger[i + 1] -= 1;
-=======
-		for (int i = 0; i < hugeInteger.length ; i++){
-			hugeInteger[i] -= hiArr[i];
-			if (hugeInteger[i] < 0) {
-				hugeInteger[i] = 10 + hugeInteger[i];
-				hugeInteger[i + 1] -= 1;
-				
->>>>>>> 73df66ffd909ad27efd3f5d39853e13231504359
 			}
 		}
 		ArrayUtils.reverse(hugeInteger);
-		return removeLeadingZeros(hugeInteger.toString());
+		removeLeadingZeros(toString());
+		return toString();
 	}
 	
 	
