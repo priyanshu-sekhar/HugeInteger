@@ -36,14 +36,26 @@ public class HugeInteger implements HugeIntegerInterface{
 	@RequestMapping(value = "sub")
 	public String sub(@RequestParam(value = "integer") String integer,
 			@RequestParam(value = "subFrom") String hi){
-		int[] hiArr = parse(hi);
+	        int[] hiArr = parse(hi);
 		this.hugeInteger = parse(integer);
 		ArrayUtils.reverse(hiArr); 
 		ArrayUtils.reverse(this.hugeInteger);
-		for (int i = 0; i < (hugeInteger.length > hiArr.length ? hiArr.length: hugeInteger.length); i++)
+		if (hugeInteger.length < hiArr.length){
+			int[] temp = hugeInteger;
+			hugeInteger = hiArr;
+			hiArr = temp;
+		}
+			
+		for (int i = 0; i < hugeInteger.length ; i++){
 			hugeInteger[i] -= hiArr[i];
+			if (hugeInteger[i] < 0) {
+				hugeInteger[i] = 10 + hugeInteger[i];
+				hugeInteger[i + 1] -= 1;
+				
+			}
+		}
 		ArrayUtils.reverse(hugeInteger);
-		return toString();
+		return removeLeadingZeros(hugeInteger.toString());
 	}
 	
 	
