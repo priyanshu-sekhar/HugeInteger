@@ -27,8 +27,14 @@ public class HugeInteger implements HugeIntegerInterface{
 		this.hugeInteger = parse(integer);
 		ArrayUtils.reverse(hiArr); 
 		ArrayUtils.reverse(this.hugeInteger);
-		for (int i = 0; i < (hugeInteger.length > hiArr.length ? hiArr.length: hugeInteger.length); i++)
+		for (int i = 0; i < (hugeInteger.length > hiArr.length ? hiArr.length: hugeInteger.length); i++){
 			hugeInteger[i] += hiArr[i];
+			if (hugeInteger[i] > 9) {
+				hugeInteger[i + 1] =  hugeInteger[i] / 10;
+			    hugeInteger[i] = hugeInteger[i] % 10;
+			}
+		}
+
 		ArrayUtils.reverse(hugeInteger);
 		return toString();
 	}
