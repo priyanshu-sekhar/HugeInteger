@@ -9,13 +9,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class HugeInteger {
+public class HugeInteger implements HugeIntegerInterface{
 	
 	int[] hugeInteger;
 	
-	
 	public HugeInteger(){
-		System.out.println("haha");
+		
+	}
+	public HugeInteger(String hugeInteger){
+		parseString(hugeInteger);
 	}
 	
 	@RequestMapping(value = "add")
@@ -56,9 +58,10 @@ public class HugeInteger {
 	@RequestMapping("/HugeInteger")
 	public boolean operations(@RequestParam(value = "integer")String val,
 			@RequestParam(value = "operation")String operation,
-			@RequestParam(value = "compare", defaultValue = "")String hgInt){
+			@RequestParam(value = "compare", defaultValue = "123")String hgInt){
 	    this.hugeInteger = parse(val);
-	    
+	    hgInt = removeLeadingZeros(hgInt);
+	    HugeInteger comparedInteger = new HugeInteger(hgInt);
 	    Predicate<Integer> isZero = t -> {return isZero();};
 	    Predicate<String> isEqualTo = t -> {return isEqualTo(t);};
 	    Predicate<String> isNotEqualTo = t -> {return isNotEqualTo(t);};
@@ -113,9 +116,12 @@ public class HugeInteger {
 		return true;	
 	}
 	
-	private boolean isGreaterThan(String hi){
-		while (hi.charAt(0) - 48 == 0)
+	private String removeLeadingZeros(String hi){
+		while (hi.charAt(0) - ZERO == 0 && hi.length() > 1)
 			hi = hi.substring(1);
+		return hi;
+	}
+	private boolean isGreaterThan(String hi){
 		if (hugeInteger.length < hi.length())
 			return false;
 		for (int i = 0; i < hugeInteger.length; i++)
@@ -125,8 +131,6 @@ public class HugeInteger {
 	}
 	
 	private boolean isLessThan(String hi){
-		while (hi.charAt(0) - 48 == 0)
-			hi = hi.substring(1);
 		if (hugeInteger.length > hi.length())
 			return false;
 		for (int i = 0; i < hugeInteger.length; i++)
@@ -144,14 +148,49 @@ public class HugeInteger {
 	}
 	
 	private int[] parse(String hgInt){
-		while (hgInt.charAt(0) - 48 == 0)
-			hgInt = hgInt.substring(1);
+		hgInt = removeLeadingZeros(hgInt);
 		String[] intArr = hgInt.split("");
 		int[] hugeInteger = new int[intArr.length];
 		for (int i = 0; i < intArr.length; i++)
 			hugeInteger[i] = Integer.parseInt(intArr[i]);
 		
 		return hugeInteger;
+	}
+
+	@Override
+	public Boolean isEqualTo(HugeInteger that) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean isNotEqualTo(HugeInteger that) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean isGreaterThan(HugeInteger that) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean isLessThan(HugeInteger that) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean isGreaterThanOrEqualTo(HugeInteger that) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean isLessThanOrEqualTo(HugeInteger that) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
